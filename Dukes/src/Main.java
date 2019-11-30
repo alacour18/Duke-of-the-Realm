@@ -22,16 +22,19 @@ public class Main extends Application{
 	private Pane playfieldLayer;
 	
 	private Image castleImage;
+	private Image enemycastleImage;
 	private Image soldierImage;
+	private Image knightImage;
 
 	private Scene scene;
 	private Input input;
 	private AnimationTimer gameLoop;
 	
-	private String playersName[] =  {"Alice", "Hugo"};
+	private String playersName[] =  {"Alice", "Hugo","Simon"};
 	private Castle castleList[] = new Castle[playersName.length];
-	private int castlePositionList[] = {100, 100, 800, 150, 300, 500, 850, 800}; 
 	private boolean gamePause = false;
+	
+	private List<Soldier> soldierList = new ArrayList<>();
 	
 	Group root;
 	
@@ -59,10 +62,13 @@ public class Main extends Application{
 				//player.processInput();
 				
 				if(!gamePause) {
+					//incrémentation de 1 piquier dans la réserve
+					castleList[0].reserve[0]+=1;
+					
 					// movement
-	
+					soldierList.forEach(soldier -> soldier.move());;
 					// update soldiers in scene
-	
+					soldierList.forEach(soldier -> soldier.updateUI());;
 					// check if sprite can be removed
 	
 					// remove removables from list, layer, etc
@@ -96,36 +102,78 @@ public class Main extends Application{
 
 	
 	private void loadGame() {
-		castleImage = new Image(getClass().getResource("/images/castle.png").toExternalForm(), 150, 150, true, true);
+		castleImage = new Image(getClass().getResource("/images/Castle.png").toExternalForm(), 150, 150, true, true);
+		enemycastleImage = new Image(getClass().getResource("/images/enemycastle.png").toExternalForm(), 150, 150, true, true);
 		soldierImage = new Image(getClass().getResource("/images/soldier.png").toExternalForm(), 35, 50, true, true);
+		knightImage = new Image(getClass().getResource("/images/knight.png").toExternalForm(), 35, 50, true, true);
 		
 		input = new Input(scene);
 		input.addListeners();
 		
-		createCastles(playersName);
-				
-		Soldier toto = new Piquier(playfieldLayer, soldierImage, castleList[0], castleList[1], 300, 300);
+		System.out.println(castleList[0]);
+		
+		createCastles(playersName, castleList);
+		
 		
 		scene.setOnMousePressed(e -> {
+			
 			Castle c;
-			c = whichCastle(castleList, e.getX(), e.getY());
-			System.out.println(c);
+			double currentx = e.getX();
+			double currenty = e.getY();
+			if(isCastle(castleList, currentx, currenty)) {
+				c = whichCastle(castleList, currentx, currenty);
+				System.out.println(c);
+				
+				//Une chance sur deux d'invoquer un piquier ou un chevalier en cliquant.
+				if (rnd.nextInt()%2 == 0){
+					if (castleList[0].reserve[0]>0) {
+						Soldier toto = new Piquier(playfieldLayer, soldierImage, castleList[0], null);
+						toto.target = c;
+						soldierList.add(toto);
+						castleList[0].reserve[0] -= 1;
+					}
+				}
+				else{
+					if (castleList[0].reserve[1]>0) {
+						Soldier titi = new Chevalier(playfieldLayer, knightImage, castleList[0], null);
+						titi.target = c;
+						soldierList.add(titi);
+						castleList[0].reserve[1] -= 1;
+					}
+				}
+				
+			}
+			
 		});
 	}
 	
-	private void createCastles(String[] playersName){
+	private void createCastles(String[] playersName, Castle[] castleList){
 		int posX, posY;
+		
 		for(int i=0; i<playersName.length; i++) {
 			String castleOwner= playersName[i];
-			posX = castlePositionList[i*2];
-			posY = castlePositionList[i*2 + 1];
-			Castle Castle = new Castle(playfieldLayer, castleImage, posX, posY, castleOwner);	
-			castleList[i] = Castle;
+			posX = rnd.nextInt((int)(1000-castleImage.getWidth()+1));
+			posY = rnd.nextInt((int)(1000-castleImage.getHeight()+1));
+			
+			if(i == 0) {
+				Castle PlayerCastle = new Castle(playfieldLayer, castleImage, posX, posY, castleOwner);
+				castleList[0] = PlayerCastle;
+			}
+			else {
+				
+				/*while(isCastle(castleList, posX, posY)) {
+					posX = rnd.nextInt((int)(1000-castleImage.getWidth()+1));
+					posY = rnd.nextInt((int)(1000-castleImage.getHeight()+1));
+				}*/
+				Castle Castle = new Castle(playfieldLayer, enemycastleImage, posX, posY, castleOwner);	
+				castleList[i] = Castle;
+			}
 			System.out.println(castleList[i]);
 		}
 	}
 	
-	private Castle whichCastle (Castle[] castleList, double x, double y) { //retourne le chateau sur lequel la souris clique.
+	private Castle whichCastle (Castle[] castleList, double x, double y) { //retourne le chateau aux coordonées x, y;
+		
 		for (int i=0 ; i< castleList.length; i++) {
 			Castle currentCastle = castleList[i];
 			if ((x >= currentCastle.x) && (x <= (currentCastle.x + currentCastle.w))) {
@@ -135,6 +183,16 @@ public class Main extends Application{
 			}
 		}
 		return null;
+	}
+	
+	private boolean isCastle (Castle[] castleList, double x, double y) { //retourne true si un chateau se trouve aux coordonées x,y;
+		if (whichCastle (castleList, x, y) == null) {
+			return false;
+		}
+		else {
+			return true;
+		}
+		
 	}
 	
 	public static void main(String[] args) {

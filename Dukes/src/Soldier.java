@@ -51,6 +51,25 @@ public class Soldier{
 		addToLayer();
 	}
 	
+	public void move(){
+		if (x < target.x) {
+			x += speed;
+		}
+		if (x > target.x) {
+			x -= speed;
+		}
+		if (y < target.y) {
+			y += speed;
+		}
+		if (y > target.y) {
+			y -= speed;
+		}
+	}
+	
+	public void updateUI() {
+        imageView.relocate(x, y);
+    }
+	
 	public void addToLayer() {
         this.layer.getChildren().add(this.imageView);
     }
