@@ -7,4 +7,6 @@ public class Settings {
 	public static final int INITIAL_RESERVE[] = {11,3,1};
 	public static final int NEUTRAL_MAX_TREASURE = 5000;
 	public static final int NEUTRAL_NBMAX_SOLDIER = 12;
+	
+	public static final int CASTLE_SPAWN_DISTANCE = 250;
 }

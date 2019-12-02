@@ -117,6 +117,13 @@ public class Main extends Application{
 		
 		createCastles(playersName, castleList);
 		
+		//Affichage de la barre de status.
+		Rectangle status_bar = new Rectangle(0, Settings.SCENE_HEIGHT-Settings.STATUS_BAR_HEIGHT, Settings.SCENE_WIDTH, Settings.STATUS_BAR_HEIGHT);
+		status_bar.setFill(Color.PEACHPUFF);
+		this.playfieldLayer.getChildren().add(status_bar);
+		Circle status_level = new Circle(Settings.STATUS_BAR_HEIGHT/2, Settings.SCENE_HEIGHT-Settings.STATUS_BAR_HEIGHT/2,Settings.STATUS_BAR_HEIGHT);
+		status_level.setFill(Color.GOLDENROD);
+		this.playfieldLayer.getChildren().add(status_level);
 		
 		scene.setOnMousePressed(e -> {
 			
@@ -126,6 +133,8 @@ public class Main extends Application{
 			if(isCastle(castleList, currentx, currenty)) {
 				c = whichCastle(castleList, currentx, currenty);
 				System.out.println(c);
+				
+				display_status(c);
 				
 				//Une chance sur deux d'invoquer un piquier ou un chevalier en cliquant.
 				if (rnd.nextInt()%2 == 0){
@@ -150,27 +159,53 @@ public class Main extends Application{
 		});
 	}
 	
-	private void createCastles(String[] playersName, Castle[] castleList){
+	private void getCoords(Castle[] castleList, int[] posList) {
 		int posX, posY;
-		
-		for(int i=0; i<playersName.length; i++) {
-			String castleOwner= playersName[i];
-			posX = rnd.nextInt((int)(1000-castleImage.getWidth()+1));
-			posY = rnd.nextInt((int)(1000-castleImage.getHeight()+1));
-			
-			if(i == 0) {
-				Castle PlayerCastle = new Castle(playfieldLayer, castleImage, posX, posY, castleOwner);
-				castleList[0] = PlayerCastle;
-			}
-			else {
-				
-				while(isCastle(castleList, posX, posY)) {
-					posX = rnd.nextInt((int)(1000-castleImage.getWidth()+1));
-					posY = rnd.nextInt((int)(1000-castleImage.getHeight()+1));
+		int cpt = 0;
+		int length = castleList.length;
+		boolean coordsOK = false;
+		while(!coordsOK) {
+			posX = rnd.nextInt((int)(Settings.SCENE_WIDTH - enemycastleImage.getWidth()/2 - 5));
+			posY = rnd.nextInt((int)(Settings.SCENE_WIDTH - enemycastleImage.getWidth()/2 - 5));
+			posList[0] = posX;
+			posList[1] = posY;
+			cpt = 0;
+			for(int i=0; i<length; i++) {
+				if(castleList[i] != null) {
+					if(Math.abs(castleList[i].x - posX) < Settings.CASTLE_SPAWN_DISTANCE || Math.abs(castleList[i].y - posY) < Settings.CASTLE_SPAWN_DISTANCE) {
+						System.out.println("salut");
+						break;
+					}
+					cpt++;
+				} else {
+					length -= 1;
 				}
 				
-				Castle Castle = new Castle(playfieldLayer, enemycastleImage, posX, posY, castleOwner);	
-				castleList[i] = Castle;
+			}
+			if(cpt == length)
+				coordsOK = true;
+		}
+ 	}
+	
+	private void createCastles(String[] playersName, Castle[] castleList){
+		
+		int posX = 0;
+		int posY = 0;
+		for(int i=0; i<playersName.length; i++) {
+			String castleOwner= playersName[i];
+			
+			if(i==0){
+				posX = rnd.nextInt((int)(Settings.SCENE_WIDTH - castleImage.getWidth()/2 - 5));
+				posY = rnd.nextInt((int)(Settings.SCENE_HEIGHT - Settings.STATUS_BAR_HEIGHT - castleImage.getHeight()/2 - 5));
+				Castle PlayerCastle = new Castle(playfieldLayer, castleImage, posX, posY, castleOwner);
+				castleList[i] = PlayerCastle;
+			} else {
+				int pos[] = {0,0};
+				getCoords(castleList, pos);
+				posX = pos[0];
+				posY = pos[1];
+				Castle PlayerCastle = new Castle(playfieldLayer, enemycastleImage, posX, posY, castleOwner);
+				castleList[i] = PlayerCastle;
 			}
 			System.out.println(castleList[i]);
 		}
@@ -197,6 +232,52 @@ public class Main extends Application{
 			return true;
 		}
 		
+	}
+	
+	private void display_status (Castle c) {
+		
+		Text level = new Text();
+		level.setText(String.valueOf(c.level));
+		level.setX(Settings.STATUS_BAR_HEIGHT/2); 
+		level.setY(Settings.SCENE_HEIGHT-Settings.STATUS_BAR_HEIGHT/2);
+		
+		Text owner = new Text();
+		owner.setText(c.owner);
+		owner.setX( Settings.SCENE_WIDTH/7); 
+		owner.setY(Settings.SCENE_HEIGHT-Settings.STATUS_BAR_HEIGHT/2);
+		
+		Text piquier = new Text();
+		piquier.setText(String.valueOf(c.reserve[0]));
+		piquier.setX( 2* Settings.SCENE_WIDTH/7); 
+		piquier.setY(Settings.SCENE_HEIGHT-Settings.STATUS_BAR_HEIGHT/2);
+		
+		Text chevalier = new Text();
+		chevalier.setText(String.valueOf(c.reserve[1]));
+		chevalier.setX( 3* Settings.SCENE_WIDTH/7); 
+		chevalier.setY(Settings.SCENE_HEIGHT-Settings.STATUS_BAR_HEIGHT/2);
+		
+		Text onagre = new Text();
+		onagre.setText(String.valueOf(c.reserve[2]));
+		onagre.setX( 4* Settings.SCENE_WIDTH/7); 
+		onagre.setY(Settings.SCENE_HEIGHT-Settings.STATUS_BAR_HEIGHT/2);
+		
+		Text revenu = new Text();
+		revenu.setText("+ "+String.valueOf(c.level*10)+" f/tour");
+		revenu.setX( 5* Settings.SCENE_WIDTH/7); 
+		revenu.setY(Settings.SCENE_HEIGHT-Settings.STATUS_BAR_HEIGHT/2);
+		
+		Text treasure = new Text();
+		treasure.setText(String.valueOf(c.treasure));
+		treasure.setX( 6* Settings.SCENE_WIDTH/7); 
+		treasure.setY(Settings.SCENE_HEIGHT-Settings.STATUS_BAR_HEIGHT/2);
+		
+		this.playfieldLayer.getChildren().add(owner);
+		this.playfieldLayer.getChildren().add(level);
+		this.playfieldLayer.getChildren().add(piquier);
+		this.playfieldLayer.getChildren().add(chevalier);
+		this.playfieldLayer.getChildren().add(onagre);
+		this.playfieldLayer.getChildren().add(revenu);
+		this.playfieldLayer.getChildren().add(treasure);
 	}
 	
 	public static void main(String[] args) {

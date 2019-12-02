@@ -13,9 +13,9 @@ public class Castle{
 	protected double x;
     protected double y;
 	
-	private String owner;
-	private double treasure;
-	private int level;
+	protected String owner;
+	protected double treasure;
+	protected int level;
 	protected int reserve[]; //reserve[0] : nbPiquier, reserve[1] : nbChevalier, reserve[2] : nbOnagre
 	private Factory factory;
 	private int door;
