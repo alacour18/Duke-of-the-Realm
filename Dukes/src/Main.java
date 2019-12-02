@@ -164,10 +164,11 @@ public class Main extends Application{
 			}
 			else {
 				
-				/*while(isCastle(castleList, posX, posY)) {
+				while(isCastle(castleList, posX, posY)) {
 					posX = rnd.nextInt((int)(1000-castleImage.getWidth()+1));
 					posY = rnd.nextInt((int)(1000-castleImage.getHeight()+1));
-				}*/
+				}
+				
 				Castle Castle = new Castle(playfieldLayer, enemycastleImage, posX, posY, castleOwner);	
 				castleList[i] = Castle;
 			}

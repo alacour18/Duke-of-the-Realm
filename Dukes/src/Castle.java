@@ -63,6 +63,7 @@ public class Castle{
 	}
 	
 	public void createDoor(int door, Image image) {
+		System.out.println("door = "+door);
 		if (door == 0) { //porte au nord
 			Line doorN = new Line((x-w/2+w/3), y-h/2, (x-w/2+2*w/3), y-h/2);
 			doorN.setStroke(Color.RED);
@@ -78,7 +79,7 @@ public class Castle{
 			doorS.setStroke(Color.RED);
 			this.layer.getChildren().add(doorS);
 		}
-		else { //porte à l'ouest
+		if (door == 3) { //porte à l'ouest
 			Line doorW = new Line(x-w/2,y -h/2+ h/3, x-w/2, y -h/2+ 2*h/3);
 			doorW.setStroke(Color.RED);
 			this.layer.getChildren().add(doorW);
