@@ -14,7 +14,10 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
+import javafx.scene.shape.*;
 
 public class Main extends Application{
 	private Random rnd = new Random();
@@ -176,8 +179,8 @@ public class Main extends Application{
 		
 		for (int i=0 ; i< castleList.length; i++) {
 			Castle currentCastle = castleList[i];
-			if ((x >= currentCastle.x) && (x <= (currentCastle.x + currentCastle.w))) {
-				if ((y >= currentCastle.y) && (y <= (currentCastle.y + currentCastle.h))) {
+			if ((x >= currentCastle.x-currentCastle.w/2) && (x <= (currentCastle.x + currentCastle.w/2))) {
+				if ((y >= currentCastle.y-currentCastle.h/2) && (y <= (currentCastle.y + currentCastle.h/2))) {
 					return currentCastle;
 				}
 			}

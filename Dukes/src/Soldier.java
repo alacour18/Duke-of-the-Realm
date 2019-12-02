@@ -30,8 +30,8 @@ public class Soldier{
 			, int time_prod, int speed, int hp, int damage) {
 		
 		this.layer = layer;
-		this.x = x;
-		this.y = y;
+		this.x = x + image.getWidth()/2;
+		this.y = y + image.getHeight()/2;
 		
 		this.cost_prod = cost_prod;
 		this.time_prod = time_prod;
